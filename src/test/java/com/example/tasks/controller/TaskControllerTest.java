@@ -196,6 +196,37 @@ class TaskControllerTest {
     }
 
     @Test
+    void getTaskCountWhenEmptyReturnsZeros() throws Exception {
+        mockMvc.perform(get("/tasks/count"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.total").value(0))
+            .andExpect(jsonPath("$.done").value(0));
+    }
+
+    @Test
+    void getTaskCountWithTasksReturnsCorrectCounts() throws Exception {
+        createSampleTasks();
+
+        mockMvc.perform(get("/tasks/count"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.total").value(2))
+            .andExpect(jsonPath("$.done").value(1));
+    }
+
+    @Test
+    void getTaskCountUpdatesDynamicallyAfterAddOrDelete() throws Exception {
+        createSampleTasks();
+
+        mockMvc.perform(delete("/tasks/1"))
+            .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/tasks/count"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.total").value(1))
+            .andExpect(jsonPath("$.done").value(1));
+    }
+
+    @Test
     void DeleteTaskReturn204() throws Exception {
         createSampleTasks();
         mockMvc.perform(delete("/tasks/1"))

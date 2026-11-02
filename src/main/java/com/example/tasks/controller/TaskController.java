@@ -2,6 +2,7 @@ package com.example.tasks.controller;
 
 import com.example.tasks.CreateTask;
 import com.example.tasks.Task;
+import com.example.tasks.TaskCount;
 import com.example.tasks.UpdateTask;
 
 import java.util.ArrayList;
@@ -28,6 +29,13 @@ public class TaskController {
             }
         }
         return totalTasks;
+    }
+
+    @GetMapping("/count")
+    public TaskCount getTaskCount() {
+        long total = tasks.size();
+        long done = tasks.values().stream().filter(Task::done).count();
+        return new TaskCount(total, done);
     }
 
     @GetMapping("/{id}")
